@@ -58,28 +58,46 @@ const canRotate = (state) => ({
 
 let turtleA = turtle(width / 2, height / 2, degreesToRadians(0));
 
-let iterations = 3;
-let pattern = ['F'];
-let rule = ['F', '+', 'F', '-', 'F', '-', 'F', '+', 'F'];
+const actions = Object.freeze({
+    'F': {function: turtleA.moveForward, params: [10]},
+    'G': {function: turtleA.moveForward, params: [10]},
+    'L': {function: turtleA.rotateLeft, params: [degreesToRadians(120)]},
+    'R': {function: turtleA.rotateRight, params: [degreesToRadians(120)]}
+});
+
+let iterations = 4;
+let kochCurve = {
+    pattern: Array.from('F'),
+    rules: {
+        'F': 'FLFRFRFLF'
+    }
+}
+
+let sierpinskiTriangle = {
+    pattern: Array.from('FRGRG'),
+    rules: {
+        'F': 'FRGLFLGRF',
+        'G': 'GG'
+    }
+}
+
+let pattern = sierpinskiTriangle.pattern;
+let rules = sierpinskiTriangle.rules;
+
 for (let i = 0; i < iterations; i++) {
     let j = 0;
     while (j < pattern.length) {
-        if (pattern[j] === 'F') {
-            pattern.splice(j, 1, ...rule);
-            j += rule.length;
-        } else {
+        let symbol = pattern[j];
+        if (rules[symbol] == null ) {
             j++;
+        } else {
+            pattern.splice(j, 1, ...rules[symbol]);
+            j += rules[symbol].length;
         }
     }
 }
 
 pattern.forEach(symbol => {
     // Draw.
-    if (symbol === 'F') {
-        turtleA.moveForward(10);
-    } else if (symbol === '+') {
-        turtleA.rotateLeft(degreesToRadians(90));
-    } else if (symbol === '-') {
-        turtleA.rotateRight(degreesToRadians(90));
-    }
+    actions[symbol]['function'](...actions[symbol]['params']);
 });
