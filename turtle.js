@@ -61,11 +61,20 @@ let turtleA = turtle(width / 2, height / 2, degreesToRadians(0));
 const actions = Object.freeze({
     'F': {function: turtleA.moveForward, params: [10]},
     'G': {function: turtleA.moveForward, params: [10]},
-    'L': {function: turtleA.rotateLeft, params: [degreesToRadians(120)]},
-    'R': {function: turtleA.rotateRight, params: [degreesToRadians(120)]}
+    'L': {function: turtleA.rotateLeft, params: [degreesToRadians(90)]},
+    'R': {function: turtleA.rotateRight, params: [degreesToRadians(90)]}
 });
 
-let iterations = 4;
+let iterations = 10;
+
+let dragonCurve = {
+    pattern: Array.from('FX'),
+    rules: {
+        'X': 'XRYFR',
+        'Y': 'LFXLY'
+    }
+};
+
 let kochCurve = {
     pattern: Array.from('F'),
     rules: {
@@ -81,14 +90,14 @@ let sierpinskiTriangle = {
     }
 }
 
-let pattern = sierpinskiTriangle.pattern;
-let rules = sierpinskiTriangle.rules;
+let pattern = dragonCurve.pattern;
+let rules = dragonCurve.rules;
 
 for (let i = 0; i < iterations; i++) {
     let j = 0;
     while (j < pattern.length) {
         let symbol = pattern[j];
-        if (rules[symbol] == null ) {
+        if (rules[symbol] == null) {
             j++;
         } else {
             pattern.splice(j, 1, ...rules[symbol]);
@@ -99,5 +108,7 @@ for (let i = 0; i < iterations; i++) {
 
 pattern.forEach(symbol => {
     // Draw.
-    actions[symbol]['function'](...actions[symbol]['params']);
+    if (actions[symbol] != null) {
+        actions[symbol]['function'](...actions[symbol]['params']);
+    }
 });
