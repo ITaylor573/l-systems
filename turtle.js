@@ -3,8 +3,28 @@ const canvas = document.querySelector('.canvas');
 const context = canvas.getContext('2d');
 const width = window.innerWidth
 const height = window.innerHeight;
-canvas.width = width;
-canvas.height = height;
+const canvasSizeRatio = 3;
+canvas.width = width * canvasSizeRatio;
+canvas.height = height * canvasSizeRatio;
+
+let mouseDown = false;
+let mouseX, mouseY;
+let scrollRatio = (canvasSizeRatio - 1) / 2;
+let scrollX = scrollRatio * window.innerWidth;
+let scrollY = scrollRatio * window.innerHeight;
+window.scrollTo(scrollX, scrollY);
+canvas.addEventListener('mousedown', () => mouseDown = true);
+canvas.addEventListener('mouseup', () => mouseDown = false);
+canvas.addEventListener('mousemove', (e) => {
+    if (mouseDown) {
+        let newScrollX = window.scrollX + mouseX - e.clientX;
+        let newScrollY = window.scrollY + mouseY - e.clientY;
+        scrollTo(newScrollX, newScrollY);
+    }
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+});
+
 
 function degreesToRadians(degrees) {
     return degrees * Math.PI / 180;
@@ -56,7 +76,7 @@ const canRotate = (state) => ({
     rotateLeft: (angle) => state.angle = modulo(state.angle - angle, 2 * Math.PI)
 });
 
-let turtleA = turtle(width / 2, height / 2, degreesToRadians(0));
+let turtleA = turtle(scrollX + window.innerWidth / 2, scrollY + window.innerHeight / 2, degreesToRadians(0));
 
 const actions = Object.freeze({
     'F': {function: turtleA.moveForward, params: [10]},
@@ -65,7 +85,7 @@ const actions = Object.freeze({
     'R': {function: turtleA.rotateRight, params: [degreesToRadians(90)]}
 });
 
-let iterations = 10;
+let iterations = 12;
 
 let dragonCurve = {
     pattern: Array.from('FX'),
